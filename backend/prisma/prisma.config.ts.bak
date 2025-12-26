@@ -1,0 +1,12 @@
+import dotenv from "dotenv";
+import { sqlite } from "@prisma/adapter-sqlite";
+
+dotenv.config();
+
+export const prismaConfig = {
+  adapter: sqlite({
+    url: process.env.DATABASE_URL || "file:./dev.db",
+  }),
+};
+
+export default prismaConfig;

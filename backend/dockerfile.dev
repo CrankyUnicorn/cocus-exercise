@@ -1,0 +1,23 @@
+FROM node:20-alpine
+
+# ensure libssl + glibc-compat for Prisma on musl
+RUN apk add --no-cache openssl libc6-compat
+
+WORKDIR /app
+
+COPY package*.json ./
+# copy prisma so prisma generate can run during image build
+COPY prisma ./prisma
+
+RUN npm install
+
+# generate prisma client (will produce linux-musl binary)
+RUN npx prisma generate
+
+RUN npm install --save-dev ts-node-dev typescript @types/node @types/express
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["npx", "ts-node-dev", "--respawn", "--transpile-only", "src/server.ts"]
